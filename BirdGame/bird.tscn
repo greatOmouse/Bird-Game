@@ -1,0 +1,149 @@
+[gd_scene load_steps=18 format=3 uid="uid://tfcqhat6ormb"]
+
+[ext_resource type="Texture2D" uid="uid://on6tj4bne6t5" path="res://BirdSprite.png" id="1_fsuhx"]
+[ext_resource type="Script" path="res://bird.gd" id="1_t3dxe"]
+[ext_resource type="AudioStream" uid="uid://dy7t5g16o8tsi" path="res://plop.wav" id="3_luedo"]
+[ext_resource type="AudioStream" uid="uid://r6tfpimvq752" path="res://jump.wav" id="3_ttymj"]
+[ext_resource type="AudioStream" uid="uid://jdbbi7mac87f" path="res://fall.wav" id="4_urtqd"]
+[ext_resource type="AudioStream" uid="uid://budt71etom476" path="res://fullyLoaded.wav" id="5_kytpn"]
+[ext_resource type="Texture2D" uid="uid://q3xehnokl3gk" path="res://dust.png" id="6_16e4w"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_0ch3m"]
+blend_mode = 1
+particles_animation = true
+particles_anim_h_frames = 4
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c28fl"]
+atlas = ExtResource("1_fsuhx")
+region = Rect2(24, 12, 12, 12)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x3be6"]
+atlas = ExtResource("1_fsuhx")
+region = Rect2(0, 12, 12, 12)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2l5uu"]
+atlas = ExtResource("1_fsuhx")
+region = Rect2(12, 0, 12, 12)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_s0oy7"]
+atlas = ExtResource("1_fsuhx")
+region = Rect2(24, 0, 12, 12)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_oyjg6"]
+atlas = ExtResource("1_fsuhx")
+region = Rect2(12, 12, 12, 12)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bbq1s"]
+atlas = ExtResource("1_fsuhx")
+region = Rect2(0, 0, 12, 12)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_245ce"]
+atlas = ExtResource("1_fsuhx")
+region = Rect2(36, 0, 12, 12)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_2hdue"]
+animations = [{
+"frames": [{
+"duration": 20.0,
+"texture": SubResource("AtlasTexture_c28fl")
+}],
+"loop": true,
+"name": &"die",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x3be6")
+}],
+"loop": true,
+"name": &"fall",
+"speed": 2.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2l5uu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_s0oy7")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 3.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_oyjg6")
+}],
+"loop": true,
+"name": &"jump",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bbq1s")
+}],
+"loop": true,
+"name": &"load",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_245ce")
+}],
+"loop": true,
+"name": &"max",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_a36hh"]
+size = Vector2(7, 11)
+
+[node name="Bird" type="CharacterBody2D"]
+z_index = 1
+script = ExtResource("1_t3dxe")
+jump = ExtResource("3_ttymj")
+plop = ExtResource("3_luedo")
+fall = ExtResource("4_urtqd")
+max = ExtResource("5_kytpn")
+
+[node name="landingDust" type="CPUParticles2D" parent="."]
+texture_filter = 1
+material = SubResource("CanvasItemMaterial_0ch3m")
+position = Vector2(0, 6)
+emitting = false
+amount = 4
+one_shot = true
+explosiveness = 1.0
+local_coords = true
+texture = ExtResource("6_16e4w")
+direction = Vector2(0, -1)
+spread = 70.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 9.6
+initial_velocity_max = 23.85
+linear_accel_min = -25.46
+linear_accel_max = -25.46
+anim_speed_min = 0.35
+anim_speed_max = 1.5
+
+[node name="sprite" type="AnimatedSprite2D" parent="."]
+texture_filter = 1
+texture_repeat = 1
+sprite_frames = SubResource("SpriteFrames_2hdue")
+animation = &"max"
+autoplay = "idle"
+
+[node name="collider" type="CollisionShape2D" parent="."]
+position = Vector2(0.5, 0.5)
+shape = SubResource("RectangleShape2D_a36hh")
+
+[node name="deadTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="Sound" type="AudioStreamPlayer2D" parent="."]
+position = Vector2(0.5, 0)
+stream = ExtResource("3_ttymj")
+
+[connection signal="timeout" from="deadTimer" to="." method="_on_dead_timer_timeout"]
